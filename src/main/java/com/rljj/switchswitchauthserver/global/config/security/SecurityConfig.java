@@ -1,4 +1,4 @@
-package com.rljj.switchswitch.global.config.security;
+package com.rljj.switchswitchauthserver.global.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

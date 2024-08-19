@@ -1,4 +1,4 @@
-package com.rljj.switchswitch.domain.veiw;
+package com.rljj.switchswitchauthserver.domain.veiw;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
