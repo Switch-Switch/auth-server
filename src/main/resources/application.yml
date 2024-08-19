@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: switchswitchauthserver
+  config:
+    import:
+      - application-secret.properties
+
+jwt:
+  expired:
+    access-token: 300000 # 5 minute
+    refresh-token: 324000000 # 3 month
