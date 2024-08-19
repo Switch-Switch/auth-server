@@ -1,4 +1,4 @@
-package com.rljj.switchswitchauthserver.domain.member;
+package com.rljj.switchswitchauthserver.domain.member.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 

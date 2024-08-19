@@ -3,6 +3,7 @@ package com.rljj.switchswitchauthserver.global.config.jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -21,16 +22,16 @@ public class JwtProvider {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    public JwtSet generateTokenSet(Long id) {
+    public JwtSet generateTokenSet(String name) {
         return JwtSet.builder()
-                .accessToken(generateToken(id, accessTokenExpireTime))
-                .refreshToken(generateToken(id, refreshTokenExpireTime))
+                .accessToken(generateToken(name, accessTokenExpireTime))
+                .refreshToken(generateToken(name, refreshTokenExpireTime))
                 .build();
     }
 
-    public String generateToken(Long id, Long expired) {
+    public String generateToken(String subject, Long expired) {
         return Jwts.builder()
-                .subject(String.valueOf(id))
+                .subject(subject)
                 .expiration(new Date(System.currentTimeMillis() + expired))
                 .issuedAt(new Date())
                 .signWith(getSecretKey())
@@ -41,14 +42,13 @@ public class JwtProvider {
         return Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
     }
 
-    public Long parseSubject(String jwt) {
-        String id = Jwts.parser()
+    public String parseSubject(String jwt) {
+        return Jwts.parser()
                 .verifyWith(getSecretKey())
                 .build()
                 .parseSignedClaims(jwt)
                 .getPayload()
                 .getSubject();
-        return Long.parseLong(id);
     }
 
     public boolean isExpired(String jwt) {

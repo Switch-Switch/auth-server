@@ -10,7 +10,6 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 public class JwtSet {
-    public static final String GRANT_TYPE = "Bearer ";
     private String accessToken;
     private String refreshToken;
 }
