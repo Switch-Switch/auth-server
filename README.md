@@ -1,2 +1,1 @@
-# Switch Switch API Server
-
+# SwitchSwitch Auth Server
