@@ -23,20 +23,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     private final JwtProvider jwtProvider;
 
-    public static final String GRANT_TYPE = "Bearer ";
-
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
-        if (!StringUtils.hasText(authHeader) || !authHeader.startsWith(GRANT_TYPE)) {
+
+        String jwt = jwtProvider.parseSubject(request);
+
+        if (jwt == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String jwt = authHeader.substring(7);
         if (jwtProvider.isExpired(jwt)) {
             jwt = jwtProvider.refreshAuthorization(jwt, response);
         }

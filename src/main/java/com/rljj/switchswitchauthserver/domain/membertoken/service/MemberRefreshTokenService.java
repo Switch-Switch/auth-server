@@ -7,4 +7,6 @@ public interface MemberRefreshTokenService {
     MemberRefreshToken createRefreshToken(Member member, String refreshToken);
 
     MemberRefreshToken getByMember(Member member);
+
+    void delete(Member member);
 }

@@ -33,6 +33,11 @@ public class MemberRefreshTokenServiceImpl implements MemberRefreshTokenService 
         return memberRefreshTokenRepository.findByMember(member);
     }
 
+    @Override
+    public void delete(Member member) {
+        memberRefreshTokenRepository.deleteByMember(member);
+    }
+
     private LocalDateTime refreshExpireTime() {
         return LocalDateTime.now().plus(refreshTokenExpireTime, ChronoUnit.MILLIS);
     }
