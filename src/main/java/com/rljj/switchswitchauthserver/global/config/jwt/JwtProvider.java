@@ -1,5 +1,6 @@
 package com.rljj.switchswitchauthserver.global.config.jwt;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import javax.crypto.SecretKey;
@@ -13,6 +14,8 @@ public interface JwtProvider {
 
     String parseSubject(String jwt);
 
+    String parseSubject(HttpServletRequest request);
+
     /**
      * 만료 여부와 관계없이 JWT의 subject를 가져옴, 필요할 때만 사용하고 이외에는 parseSubject() 사용
      * @param jwt accessToken
@@ -25,4 +28,6 @@ public interface JwtProvider {
     void setJwtInCookie(String accessToken, HttpServletResponse response);
 
     String refreshAuthorization(String jwt, HttpServletResponse response);
+
+    void expireJwtInCookie(HttpServletResponse response);
 }

@@ -6,12 +6,14 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import java.util.Base64;
@@ -29,6 +31,11 @@ public class JwtProviderImpl implements JwtProvider {
 
     @Value("${JWT.SECRET}")
     private String secretKey;
+
+    private final String TOKEN_KEY = "jwt";
+
+    public final String GRANT_TYPE = "Bearer ";
+
 
     private final MemberService memberService;
 
@@ -70,6 +77,15 @@ public class JwtProviderImpl implements JwtProvider {
     }
 
     @Override
+    public String parseSubject(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (!StringUtils.hasText(authHeader) || !authHeader.startsWith(GRANT_TYPE)) {
+            return null;
+        }
+        return parseSubject(authHeader.substring(7));
+    }
+
+    @Override
     public String parseSubjectWithoutSecure(String jwt) {
         try {
             return Jwts.parser()
@@ -100,7 +116,7 @@ public class JwtProviderImpl implements JwtProvider {
 
     @Override
     public void setJwtInCookie(String accessToken, HttpServletResponse response) {
-        Cookie cookie = new Cookie("jwt", accessToken);
+        Cookie cookie = new Cookie(TOKEN_KEY, accessToken);
         cookie.setHttpOnly(true);
         cookie.setMaxAge((int) accessTokenExpireTime);
         cookie.setPath("/");
@@ -119,5 +135,13 @@ public class JwtProviderImpl implements JwtProvider {
         accessToken = generateToken(member.getName(), accessTokenExpireTime);
         setJwtInCookie(accessToken, response);
         return accessToken;
+    }
+
+    @Override
+    public void expireJwtInCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie(TOKEN_KEY, null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
 }
