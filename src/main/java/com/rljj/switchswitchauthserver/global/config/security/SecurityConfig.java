@@ -26,13 +26,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final String[] permittedUrls = {"/auth/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, HttpSession httpSession) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-//                                .requestMatchers("/**").permitAll()
+                                .requestMatchers(permittedUrls).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -40,10 +41,5 @@ public class SecurityConfig {
         ;
 
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }

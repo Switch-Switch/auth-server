@@ -1,63 +1,28 @@
 package com.rljj.switchswitchauthserver.global.config.jwt;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
+import jakarta.servlet.http.HttpServletResponse;
 
 import javax.crypto.SecretKey;
-import java.util.Base64;
-import java.util.Date;
 
-@Component
-public class JwtProvider {
+public interface JwtProvider {
+    JwtSet generateTokenSet(String name);
 
-    @Value("${jwt.expired.access-token}")
-    private long accessTokenExpireTime;
+    String generateToken(String subject, Long expired);
 
-    @Value("${jwt.expired.refresh-token}")
-    private long refreshTokenExpireTime;
+    SecretKey getSecretKey();
 
-    @Value("${jwt.secret}")
-    private String secretKey;
+    String parseSubject(String jwt);
 
-    public JwtSet generateTokenSet(String name) {
-        return JwtSet.builder()
-                .accessToken(generateToken(name, accessTokenExpireTime))
-                .refreshToken(generateToken(name, refreshTokenExpireTime))
-                .build();
-    }
+    /**
+     * 만료 여부와 관계없이 JWT의 subject를 가져옴, 필요할 때만 사용하고 이외에는 parseSubject() 사용
+     * @param jwt accessToken
+     * @return subject (사용자 이름, name)
+     */
+    String parseSubjectWithoutSecure(String jwt);
 
-    public String generateToken(String subject, Long expired) {
-        return Jwts.builder()
-                .subject(subject)
-                .expiration(new Date(System.currentTimeMillis() + expired))
-                .issuedAt(new Date())
-                .signWith(getSecretKey())
-                .compact();
-    }
+    boolean isExpired(String jwt);
 
-    public SecretKey getSecretKey() {
-        return Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
-    }
+    void setJwtInCookie(String accessToken, HttpServletResponse response);
 
-    public String parseSubject(String jwt) {
-        return Jwts.parser()
-                .verifyWith(getSecretKey())
-                .build()
-                .parseSignedClaims(jwt)
-                .getPayload()
-                .getSubject();
-    }
-
-    public boolean isExpired(String jwt) {
-        return Jwts.parser()
-                .verifyWith(getSecretKey())
-                .build()
-                .parseSignedClaims(jwt)
-                .getPayload()
-                .getExpiration()
-                .before(new Date());
-    }
+    String refreshAuthorization(String jwt, HttpServletResponse response);
 }

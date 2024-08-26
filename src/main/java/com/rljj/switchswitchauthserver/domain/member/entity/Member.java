@@ -1,13 +1,15 @@
 package com.rljj.switchswitchauthserver.domain.member.entity;
 
-import com.rljj.switchswitchauthserver.domain.membertoken.entity.MemberToken;
+import com.rljj.switchswitchauthserver.domain.membertoken.entity.MemberRefreshToken;
 import com.rljj.switchswitchauthserver.global.baseentity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity
 public class Member extends BaseEntity {
     @Column(nullable = false, unique = true)
@@ -17,5 +19,5 @@ public class Member extends BaseEntity {
     private String password;
 
     @OneToOne(fetch = FetchType.LAZY)
-    private MemberToken memberToken;
+    private MemberRefreshToken memberRefreshToken;
 }

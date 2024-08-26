@@ -26,7 +26,7 @@ public class JwtProviderTest {
 
     @Test
     public void testGenerateJwt() {
-        String jwt = jwtProvider.generateToken(1L, expired);
+        String jwt = jwtProvider.generateToken("1", expired);
         assertThat(jwt).isNotBlank();
     }
 
@@ -40,7 +40,7 @@ public class JwtProviderTest {
     @Test
     public void testJWT() {
         //given
-        Long givenId = 1L;
+        String givenId = "1";
         JwtSet jwtSet = jwtProvider.generateTokenSet(givenId);
 
         //when

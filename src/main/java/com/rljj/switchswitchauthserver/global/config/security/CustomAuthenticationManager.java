@@ -26,7 +26,7 @@ public class CustomAuthenticationManager implements AuthenticationManager {
     }
 
     private Authentication checkPassword(UserDetails userDetails, String password) {
-        if (encoder.matches(userDetails.getPassword(), password)) {
+        if (encoder.matches(password, userDetails.getPassword())) {
             return new UsernamePasswordAuthenticationToken(
                     userDetails.getUsername(),
                     userDetails.getPassword(),
